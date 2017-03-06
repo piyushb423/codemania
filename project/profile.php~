@@ -1,0 +1,67 @@
+<?php
+  session_start();
+ 
+?>
+<!DOCTYPE html>
+<html>
+<title>My Profile</title>
+<head>
+<style>
+body{
+  background-color:	#DCDCDC;
+}
+div.profile{
+  float:left;
+  width:500px;
+  margin-top:100px;
+  margin-left:50px;
+}
+div.button{
+  float:left;
+  margin-left:50px;
+  margin-top:114px;
+  
+}
+</style>
+</head>
+<body>
+<?php
+  $name=$upname=$karmapoint=$college="";
+  $upname = $_SESSION['login_user'];
+  include("connection.php");
+  $sql3="select name,karmapoint,email,college from user where username='$upname'";
+  $result = $conn->query($sql3);
+  
+  if ($result->num_rows > 0 ) {
+    
+    while($row = $result->fetch_assoc()) {
+       
+       $name=$row["name"] ;
+       $karmapoint=$row["karmapoint"]; 
+       $college=$row["college"];    
+       $email=$row["email"];
+    }
+} 
+?>
+<a href="http://localhost/project/main.php"><img src="pic.png" width=200px height=100px></a>
+<img src="index.jpeg" max-width=300px max-height=100px style="float:left ; margin-top:100px ">
+<div class="profile">
+<fieldset>
+<legend style="font-size:30px">My Profile:</legend>
+<label style="font-size:20px">Username:</label>&nbsp&nbsp&nbsp<font size='5pt'><?php echo $upname ;?></font><br><br>
+<label style="font-size:20px">Name:</label>&nbsp&nbsp&nbsp&nbsp&nbsp<font size='5pt'><?php echo $name ;?></font><br><br>
+<label style="font-size:20px">Email:</label>&nbsp&nbsp&nbsp&nbsp&nbsp<font size='4pt'><?php echo $email ;?></font><br><br>
+<label style="font-size:20px">Karma Point:</label>&nbsp&nbsp<font size='5pt'><?php echo $karmapoint;?></font><br><br>
+<label style="font-size:20px">College:</label>&nbsp&nbsp&nbsp<font size='5pt'><?php echo $college ;?></font><br><br>
+</fieldset>
+</div>
+<div class="button">
+<form action="http://localhost/project/editprofile.php">
+  <input type="submit" value="Edit Profile" style="font-size:20px">
+</form><br><br><br><br><br><br><br><br><br><br><br>
+<form action="http://localhost/project/logout.php">
+  <input type="submit" value="Logout" style="font-size:20px">
+</form>
+</div>
+</body>
+</html>

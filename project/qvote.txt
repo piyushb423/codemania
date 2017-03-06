@@ -1,0 +1,4 @@
+create table qvote (
+ID int ,
+username VARCHAR(30)
+);

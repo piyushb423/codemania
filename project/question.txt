@@ -1,0 +1,7 @@
+CREATE TABLE question (
+ID int NOT NULL AUTO_INCREMENT primary key,
+question VARCHAR(10000) not null, 
+username VARCHAR(30) ,
+qpoint int,
+tag varchar(30)
+);

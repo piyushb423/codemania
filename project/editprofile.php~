@@ -1,0 +1,189 @@
+<?php
+session_start();
+?>
+<!DoCTYPE html>
+<html>
+<title>Register</title>
+<head>
+<style>
+body{
+  background-color:	#DCDCDC;
+}
+.error{
+  color: red;
+}
+a{
+
+border: 1px solid #DCDCDC;
+padding: 3px;
+text-decoration: none;
+background-color :  #DCDCDC;
+}
+h1{
+color: #800000;
+
+}
+h2{
+  text-align :center;
+  margin : 0 auto ;
+  color: black;
+}
+
+div.Reg {
+
+max-width: 700px;
+max-height : 800px;
+margin: 0 auto;
+background-color :#DCDCDC;
+}
+
+
+</style>
+</head>
+<body>
+<?php
+$nameErr =  $emailErr = $passwordErr = $myname= $confirmpasswordErr="";
+$name = $email = $password = $confirmpassword = $college = "";
+$f=0;
+$myname = $_SESSION['login_user'];
+include("connection.php");
+$sql3= "select name,college,email from user where username='$myname'";
+$result=$conn->query($sql3);
+if($result-> num_rows >0){
+  while($row = $result -> fetch_assoc()){
+    $nm=$row['name'];
+    $mail=$row['email'];
+    $clg=$row['college'];
+  }
+}
+$conn->close();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["name"])) {
+    $nameErr = "Name is required";
+    
+  } else {
+    $name = test_input($_POST["name"]);
+    // check if name only contains letters and whitespace
+    if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
+      $nameErr = "Only letters and white space allowed";
+      }
+     else
+     $f+=1;
+  }
+  
+  if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+  } else {
+    $email = test_input($_POST["email"]);
+    // check if e-mail address is well-formed
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $emailErr = "Invalid email format"; 
+    }
+    else
+    $f+=1;
+  }
+
+
+  if (empty($_POST["pass"])) {
+    $passwordErr = "Password is required";
+  } else {
+    $password = test_input($_POST["pass"]);
+    if(strlen($password)<6)
+     $passwordErr = "Minimum 6 char required";
+    else 
+     $f+=1;
+  }
+  if (empty($_POST["cpass"])) {
+    $confirmpasswordErr = "Confirm Password is required";
+  } else {
+    $confirmpassword = test_input($_POST["cpass"]);
+    if(strcmp($confirmpassword,$password)!=0)
+     $confirmpasswordErr = "Password not matched";
+    else 
+     $f+=1;
+  }
+ 
+  if (empty($_POST["college"])) {
+    $college = "";
+  } else {
+    $college = test_input($_POST["college"]);
+  }
+}
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+?>
+
+<a href="http://localhost/project/main.php"><img src="pic.png" width=200px height=100px></a>
+
+<div class="Reg">
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
+
+ <fieldset>
+  <legend style="font-size:30px">Edit Profile:</legend>
+  <label style="font-size:20px">Name :</label> &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp&nbsp<input type="text" <?php echo "value='$nm'";?> name="name">
+  <span class="error"><?php echo $nameErr;?></span><br><br>
+  
+  <label style="font-size:20px">Email :</label> &nbsp &nbsp &nbsp&nbsp &nbsp&nbsp &nbsp <input type="email" <?php echo "value='$mail'";?> name="email">
+  <span class="error"> <?php echo $emailErr;?></span><br><br>
+
+  <label style="font-size:20px">Password :</label>&nbsp&nbsp &nbsp&nbsp<input type="password" name="pass">
+  <span class="error"> <?php echo $passwordErr;?></span><br><br>
+  
+  <label style="font-size:20px">Confirm<br>Password :</label>&nbsp &nbsp &nbsp&nbsp<input type="password"  name="cpass">
+  <span class="error"> <?php echo $confirmpasswordErr;?></span><br><br>
+  
+  <label style="font-size:20px">College :</label>&nbsp&nbsp &nbsp &nbsp &nbsp&nbsp<input type="text" <?php echo "value='$clg'";?> name="college"><br><br>
+  
+  
+  
+  
+  <input type="submit" value="Update" style="font-size:15px">
+
+ </fieldset>
+</form>
+</div>
+<br><br>
+<?php
+if($f==4){
+
+$servername = "localhost";
+$uname = "root";
+$pword = "";
+$dbname = "myDB";
+
+// Create connection
+$conn = new mysqli($servername, $uname, $pword, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+    }
+
+     
+$sql1="update user set name='$name', password='$password',email='$email',college='$college' where username='$myname'" ;
+
+if ($conn->query($sql1) === TRUE) {
+    sleep(1);
+    $host  = $_SERVER['HTTP_HOST'];
+    $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+    $extra = 'profile.php';
+    header("Location: http://$host$uri/$extra");
+} else {
+    //echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "<h2>Sorry</h2><br><br><br>";
+}
+$conn->close();
+}
+else
+{
+}
+?>
+
+
+
+</body>
+</html>

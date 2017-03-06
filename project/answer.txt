@@ -1,0 +1,7 @@
+CREATE TABLE answer (
+ID int NOT NULL ,
+AID int not null AUTO_INCREMENT primary key,
+answer VARCHAR(10000) not null, 
+username VARCHAR(30) ,
+apoint int
+);

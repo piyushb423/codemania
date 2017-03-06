@@ -1,0 +1,4 @@
+create table avote (
+ID int ,
+username VARCHAR(30)
+);

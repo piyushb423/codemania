@@ -1,0 +1,186 @@
+<!DoCTYPE html>
+<html>
+<title>Register</title>
+<head>
+<style>
+body{
+  background-color:	#DCDCDC;
+}
+.error{
+  color: red;
+}
+a{
+
+border: 1px solid #DCDCDC;
+padding: 3px;
+text-decoration: none;
+background-color :  #DCDCDC;
+}
+h1{
+color: #800000;
+
+}
+h2{
+  text-align :center;
+  margin : 0 auto ;
+  color: black;
+}
+
+div.Reg {
+
+max-width: 700px;
+max-height : 800px;
+margin: 0 auto;
+background-color :#DCDCDC;
+}
+
+</style>
+</head>
+<body>
+<?php
+$nameErr = $usernameErr= $emailErr = $genderErr = $passwordErr = $confirmpasswordErr="";
+$name = $username= $email = $gender = $password = $confirmpassword = $college = "";
+$f=0;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["name"])) {
+    $nameErr = "Name is required";
+    
+  } else {
+    $name = test_input($_POST["name"]);
+    // check if name only contains letters and whitespace
+    if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
+      $nameErr = "Only letters and white space allowed"; 
+      }
+     else
+     $f+=1;
+  }
+  
+  if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+  } else {
+    $email = test_input($_POST["email"]);
+    // check if e-mail address is well-formed
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $emailErr = "Invalid email format"; 
+    }
+    else
+    $f+=1;
+  }
+    
+  if (empty($_POST["username"])) {
+     $usernameErr = "Username is required";
+  } else {
+    $username = test_input($_POST["username"]);
+    
+    $f+=1;
+  }
+
+  if (empty($_POST["pass"])) {
+    $passwordErr = "Password is required";
+  } else {
+    $password = test_input($_POST["pass"]);
+    if(strlen($password)<6)
+     $passwordErr = "Minimum 6 char required";
+    else 
+     $f+=1;
+  }
+  if (empty($_POST["cpass"])) {
+    $confirmpasswordErr = "Confirm Password is required";
+  } else {
+    $confirmpassword = test_input($_POST["cpass"]);
+    if(strcmp($confirmpassword,$password)!=0)
+     $confirmpasswordErr = "Password not matched";
+    else 
+     $f+=1;
+  }
+  if (empty($_POST["gender"])) {
+    $genderErr = "Gender is required";
+  } else {
+    $gender = test_input($_POST["gender"]);
+     $f+=1;
+  }
+  if (empty($_POST["college"])) {
+    $college = "";
+  } else {
+    $college = test_input($_POST["college"]);
+  }
+}
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+?>
+
+<h1 align=center><marquee behavior=scroll scrollamount="10" direction="left">CODEMANIA DISCUSSION</marquee></h1>
+<a href="http://localhost/project/home.php"><img src="pic.png" width=200px height=100px></a>
+<div class="Reg">
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
+
+ <fieldset>
+  <legend style="font-size:30px">Sign Up:</legend>
+  <p><span class="error">* required field.</span></p>
+  
+  <label style="font-size:20px">Name :</label> &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp&nbsp<input type="text" name="name">
+  <span class="error">* <?php echo $nameErr;?></span><br><br>
+  <label style="font-size:20px">Email :</label> &nbsp &nbsp &nbsp&nbsp &nbsp&nbsp &nbsp<input type="email" name="email">
+  <span class="error">* <?php echo $emailErr;?></span><br><br>
+  <label style="font-size:20px">Username :</label>&nbsp &nbsp&nbsp<input type="text" name="username">
+  <span class="error">* <?php echo $usernameErr;?></span><br><br>
+  <label style="font-size:20px">Password :</label>&nbsp&nbsp &nbsp&nbsp<input type="password" name="pass">
+  <span class="error">* <?php echo $passwordErr;?></span><br><br>
+  <label style="font-size:20px">Confirm<br>Password :</label>&nbsp &nbsp &nbsp&nbsp<input type="password" name="cpass">
+  <span class="error">* <?php echo $confirmpasswordErr;?></span><br><br>
+  <label style="font-size:20px">College :</label>&nbsp&nbsp &nbsp &nbsp &nbsp&nbsp<input type="text" name="college"><br><br>
+  <label style="font-size:20px">Gender :</label>&nbsp&nbsp &nbsp &nbsp &nbsp
+  <input type="radio" name="gender"  value="female">Female
+  <input type="radio" name="gender"  value="male">Male
+  <span class="error">* <?php echo $genderErr;?></span>
+  <br><br>
+  <input type="submit" value="Register" style="font-size:15px">
+   <a href="http://localhost/project/login.php" style="font-size:20px">Login</a>
+
+
+ </fieldset>
+</form>
+</div>
+<br><br>
+<?php
+if($f==6){
+$servername = "localhost";
+$uname = "root";
+$pword = "";
+$dbname = "myDB";
+
+// Create connection
+$conn = new mysqli($servername, $uname, $pword, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+    }
+
+$sql = "INSERT INTO user VALUES ('$name','$email','$username','$password','$college','$gender',0)";
+
+if ($conn->query($sql) === TRUE) {
+         $host  = $_SERVER['HTTP_HOST'];
+          $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+          // $extra = 'btree.php';
+          $extra="login.php";
+          header("Location: http://$host$uri/$extra");
+} else {
+     $message="Already resister username";
+   echo "<script type='text/javascript'>alert('$message');</script>";
+}
+$conn->close();
+}
+else
+{
+}
+?>
+
+
+
+</body>
+</html>
